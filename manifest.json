@@ -1,0 +1,27 @@
+{
+    "manifest_version": 2,
+    "name": "Tunnel",
+    "version": "1.0",
+    "background": {
+        "scripts": ["background.js"],
+        "persistent": true
+    },
+    "permissions": [
+        "webRequest",
+        "webRequestBlocking",
+        "*://discord.com/*",
+        "theme"
+    ],
+
+    "description": "Wraps your Discord messages into a cozy Einstein-Rosen bridge.",
+
+    "icons": {
+      "48": "icons/tunnel_48.png"
+    },
+
+    "browser_action": {
+        "default_icon": "icons/tunnel_48.png",
+        "default_title": "Tunnel",
+        "default_popup": "popup/tunnel.html"
+    }
+}
