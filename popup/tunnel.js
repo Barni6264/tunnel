@@ -4,23 +4,20 @@ async function main() {
 
 // use these to sync gui state with the background script,
 // like "on/off" values and current settings
-function loadValue(key){
+function getValue(key){
     return new Promise((resolve, _) => {
         chrome.runtime.sendMessage({
             type: 'get',
-            key
+            data: [key]
         }, (response) => {
-            encrypt.checked = response.state;
-            resolve();
+            resolve(response);
         });
     });
 }
-function updateValue(key, value) {
+function setValue(key, value) {
     chrome.runtime.sendMessage({
         type: 'set',
-        pair: {
-            [key]: value
-        }
+        data: [key, value]
     });
 }
 
