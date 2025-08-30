@@ -19,7 +19,7 @@
     "content_scripts": [
         {
             "matches": ["*://discord.com/*"],
-            "js": ["discord_encrypt.js"]
+            "js": ["scripts/discord_content.js"]
         }
     ],
         "browser_action": {
