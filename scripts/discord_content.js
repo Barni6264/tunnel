@@ -74,7 +74,7 @@ window.addEventListener("message", async (message) => {
             if (message.data === PING_REQUEST) {
                 clearTimeout(reconnectTimeout);
                 console.log("Reconnected to an old script. I'll reload the page and reinject.");
-                if (confirm("Old injected script detected.\nIt is highly recommended to reload the page.\n\nOutdated scripts or multiple injected instances will lead to errors.\n\nYou can reload now, or manually if you want to finish something.")) {
+                if (confirm("Old injected script detected.\nIt is highly recommended to reload the page.\n\nOutdated scripts or multiple injected instances WILL lead to errors.\n\nYou can reload now, or manually if you want to finish something.")) {
                     location.reload();
                     alert("Reloading...");
                 } else {
