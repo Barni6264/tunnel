@@ -125,19 +125,20 @@ const observer = new MutationObserver(async muts => {
 });
 function iterateNodeTree(node) { // for new nodes (*1)
     node.childNodes.forEach(async (n) => {
-        if (!isMessageNode(node)) {
+        if (!isMessageNode(n)) {
             iterateNodeTree(n);
             return;
         }
 
         console.log("Message node found.");
+        const spansParent = n.parentElement;
+
         // "loading"
-        n.parentElement.innerHTML = "";
-        n.parentElement.appendChild(buildLoadingHtml());
+        spansParent.innerHTML = "";
+        spansParent.appendChild(buildLoadingHtml());
 
         const data = await onIncomingMessage(n.textContent);
         if (data.success === true) { // "encrypted"
-            const spansParent = n.parentElement;
             spansParent.innerHTML = "";
             const newSpan = buildHtmlEncrypted(data.content);
             spansParent.appendChild(newSpan);
@@ -150,7 +151,7 @@ function iterateNodeTree(node) { // for new nodes (*1)
     });
 }
 function isMessageNode(node) {
-    return n.nodeType === Node.ELEMENT_NODE && node.textContent && node.parentElement.id.startsWith("message-content-");
+    return node.nodeType === Node.ELEMENT_NODE && node.textContent && node.parentElement.id.startsWith("message-content-");
 }
 
 observer.observe(document.body,
@@ -166,7 +167,7 @@ function buildHtmlEncrypted(message) {
     outer.style.borderRadius = "5px";
     outer.style.padding = "5px";
     outer.style.background = "#00FF0011";
-    label.style.margin = "2px 2px 2px 2px";
+    outer.style.margin = "2px 2px 2px 2px";
 
     const label = document.createElement("span");
     label.style.padding = "1px 1px";
