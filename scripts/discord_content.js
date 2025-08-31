@@ -1,6 +1,3 @@
-import crypto from "crypto";
-import { unescape } from "querystring";
-
 const TEXT_MARK = "!?>";
 
 const RECONNECT_TIMEOUT_MS = 2000;
@@ -18,6 +15,8 @@ const PING_REQUEST = "u alive?";
 
 const enc = new TextEncoder();
 const dec = new TextDecoder();
+
+const shield = crypto.getRandomValues(new Uint32Array(8)).join("+");
 
 // settings synced from background.js
 const settings = {
@@ -41,27 +40,30 @@ sendToInjected({
 });
 
 /// injected script comms
-let counter = 0;
 // message from injected script
 window.addEventListener("message", async (message) => {
+    if (message.shield !== shield) {
+        console.warn(`Mismatch between shared secrets. Expected: ${shield}; Actual: ${message.shield}`);
+        return;
+    }
     switch (message.type) {
         case TYPES_REQUEST:
             if (message.data.reason === CRYPT_REASON_EN) {
-                const encrypted = await encrypt(message.content);
+                const encrypted = await encrypt(message.data.content);
                 sendToInjected({
                     type: TYPES_RESPONSE,
                     data: {
-                        id: message.id,
+                        id: message.data.id,
                         content: encrypted.message,
                         success: encrypted.success
                     }
                 });
-            } else if (message.reason === CRYPT_REASON_DE) {
-                const decrypted = await decrypt(message.content);
+            } else if (message.data.reason === CRYPT_REASON_DE) {
+                const decrypted = await decrypt(message.data.content);
                 sendToInjected({
                     type: TYPES_RESPONSE,
                     data: {
-                        id: message.id,
+                        id: message.data.id,
                         content: decrypted.message,
                         success: decrypted.success
                     }
@@ -69,7 +71,7 @@ window.addEventListener("message", async (message) => {
             }
             break;
         case TYPES_RESPONSE:
-            if (message.reason === SCRIPT_COMMAND_REASON_PING) {
+            if (message.data === PING_REQUEST) {
                 clearTimeout(reconnectTimeout);
                 console.log("Reconnected to an old script. I'll reload the page and reinject.");
                 if (confirm("Old injected script detected.\nIt is highly recommended to reload the page.\n\nOutdated scripts or multiple injected instances will lead to errors.\n\nYou can reload now, or manually if you want to finish something.")) {
@@ -87,24 +89,27 @@ window.addEventListener("message", async (message) => {
 });
 
 function sendToInjected(message) {
+    message.shield = shield;
     window.postMessage(message);
 }
 // inject
 function inject() {
     const script = document.createElement("script");
     script.src = chrome.runtime.getURL("discord_injected.js");
+    script.dataset.shield = shield;
     console.log(`Injecting ${script.src}...`);
     script.onload = () => {
         console.log(`Sneaky ~`);
         script.remove();
         console.log(`~ Wooosh!`);
     }
-    (document.head || document.documentElement).append(s);
+    (document.head || document.documentElement).append(script);
 }
 
 // magic
+//#region crypto
 async function encrypt(message) {
-    if (!settings.enabled) return message;
+    if (!settings.enabled) return { message: result, success: false };
 
     let success = true;
     try {
@@ -150,9 +155,7 @@ async function encrypt(message) {
     return { message: result, success };
 }
 async function decrypt(message) {
-    if (!settings.enabled) return message;
-
-    if (!message.startsWith(TEXT_MARK)) return message;
+    if (!settings.enabled || !message.startsWith(TEXT_MARK)) return { message: result, success: false };
 
     let success = true;
     try {
@@ -185,7 +188,7 @@ async function decrypt(message) {
             key,
             encrypted
         );
-        message = dec.decode(dec);
+        message = dec.decode(finalArray);
     } catch (err) {
         success = false;
         console.error("Failed to decrypt message", message, err);
@@ -193,3 +196,6 @@ async function decrypt(message) {
 
     return { message, success };
 }
+//#endregion
+
+console.log("Hello from content script!");
