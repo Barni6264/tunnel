@@ -1,0 +1,220 @@
+/* Tunnel Extension Popup Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 300px;
+    min-height: 200px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: black;
+    color: white;
+}
+
+.container {
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 
+                0 0 40px rgba(255, 255, 255, 0.2), 
+                0 0 60px rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.logo {
+    width: 32px;
+    height: 32px;
+    margin-right: 12px;
+}
+
+h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Toggle Switch Styles */
+.toggle-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.toggle-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.toggle-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.3);
+    transition: .3s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+.toggle-input:checked + .slider {
+    background-color: #4CAF50;
+}
+
+.toggle-input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 16px;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.status-indicator.enabled {
+    background-color: rgba(76, 175, 80, 0.2);
+    border: 1px solid rgba(76, 175, 80, 0.5);
+}
+
+.status-indicator.disabled {
+    background-color: rgba(244, 67, 54, 0.2);
+    border: 1px solid rgba(244, 67, 54, 0.5);
+}
+
+.status-text {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Password Section Styles */
+.password-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.password-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+}
+
+.password-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input {
+    width: 100%;
+    padding: 10px 40px 10px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.password-input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+.password-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.show-password-btn {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    font-size: 16px;
+}
+
+.show-password-btn:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.password-info {
+    margin-top: 4px;
+}
+
+.password-info small {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 320px) {
+    body {
+        width: 280px;
+    }
+    
+    .container {
+        padding: 12px;
+    }
+}
