@@ -55,6 +55,10 @@ function setupEventListeners() {
         const isEnabled = this.checked;
         setValue('enabled', isEnabled);
         updateStatusIndicator(isEnabled);
+        
+        if (isEnabled) {
+            setValue('password', passwordInput.value);
+        }
     });
 
     // Slider click event listener
@@ -65,6 +69,10 @@ function setupEventListeners() {
         const isEnabled = enabledToggle.checked;
         setValue('enabled', isEnabled);
         updateStatusIndicator(isEnabled);
+        
+        if (isEnabled) {
+            setValue('password', passwordInput.value);
+        }
     });
 
     // Password input event listener
