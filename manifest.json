@@ -23,10 +23,7 @@
             "js": ["scripts/discord_content.js"]
         }
     ],
-    "web_accessible_resources": [{
-        "resources": ["scripts/discord_injected.js"],
-        "matches": ["*://*.discord.com/*"]
-    }],
+        "web_accessible_resources": ["scripts/discord_injected.js"],
         "browser_action": {
         "default_icon": "icons/tunnel_48.png",
         "default_title": "Tunnel",
