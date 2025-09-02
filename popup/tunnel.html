@@ -6,6 +6,38 @@
     </head>
 
     <body>
+        <div class="container">
+            <div class="header">
+                <img src="../icons/tunnel_48.png" alt="Tunnel" class="logo">
+                <h1>Tunnel</h1>
+            </div>
+            
+            <div class="main-content">
+                <div class="toggle-section">
+                    <div class="toggle-container">
+                        <label for="enabled-toggle" class="toggle-label">Enable Discord Encryption</label>
+                        <div class="toggle-switch" id="toggle-switch">
+                            <input type="checkbox" id="enabled-toggle" class="toggle-input">
+                            <span class="slider"></span>
+                        </div>
+                    </div>
+                    <div class="status-indicator" id="status-indicator">
+                        <span class="status-text" id="status-text">Disabled</span>
+                    </div>
+                </div>
+                
+                <div class="password-section">
+                    <label for="password-input" class="password-label">Encryption Password</label>
+                    <div class="password-container">
+                        <input type="password" id="password-input" class="password-input" placeholder="Enter encryption password">
+                        <button type="button" id="show-password" class="show-password-btn">👁️</button>
+                    </div>
+                    <div class="password-info">
+                        <small>This password is used to encrypt/decrypt Discord messages</small>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <script type="text/javascript" src="tunnel.js"></script>
     </body>
