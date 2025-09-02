@@ -1,17 +1,19 @@
 const TEXT_MARK = "!?>";
 
-const RECONNECT_TIMEOUT_MS = 2000;
+const RECONNECT_TIMEOUT_MS = 5000;
 const ENCRYPT_ITERATIONS = 100_000;
 
 const MAX_DISCORD_MESSAGE_LENGTH_IN_CHARS = 2000;
 
 const TYPES_REQUEST = "request";
 const TYPES_RESPONSE = "response";
+const TYPES_PING = "u alive?";
 
 const CRYPT_REASON_EN = "encrypt";
 const CRYPT_REASON_DE = "decrypt";
 
-const PING_REQUEST = "u alive?";
+const DIRECTION_I2C = "injected2content";
+const DIRECTION_C2I = "content2injected";
 
 const enc = new TextEncoder();
 const dec = new TextDecoder();
@@ -19,10 +21,7 @@ const dec = new TextDecoder();
 const shield = crypto.getRandomValues(new Uint32Array(8)).join("+");
 
 // settings synced from background.js
-const settings = {
-    password: "bPTH9ZMK3pRJikpxeFSizeZxL2SKzykz",
-    enabled: false
-};
+const settings = {};
 chrome.runtime.onMessage.addListener((message) => {
     console.log(`Set ${message.data[0]} to ${message.data[1]}.`);
     settings[message.data[0]] = message.data[1];
@@ -35,51 +34,50 @@ const reconnectTimeout = setTimeout(() => {
     alert("Injected!");
 }, RECONNECT_TIMEOUT_MS);
 sendToInjected({
-    type: TYPES_REQUEST,
-    data: PING_REQUEST
+    type: TYPES_PING
 });
 
 /// injected script comms
 // message from injected script
 window.addEventListener("message", async (message) => {
-    if (message.shield !== shield) {
-        console.warn(`Mismatch between shared secrets. Expected: ${shield}; Actual: ${message.shield}`);
+    const data = message.data;
+    if (data.direction !== DIRECTION_I2C) return;
+
+    if (data.shield !== shield) {
+        console.warn(`Mismatch between shared secrets. Expected: ${shield}; Actual: ${data.shield}`);
         return;
     }
-    switch (message.type) {
+    switch (data.type) {
         case TYPES_REQUEST:
-            if (message.data.reason === CRYPT_REASON_EN) {
-                const encrypted = await encrypt(message.data.content);
+            if (data.reason === CRYPT_REASON_EN) {
+                const encrypted = await encrypt(data.content);
                 sendToInjected({
                     type: TYPES_RESPONSE,
-                    data: {
-                        id: message.data.id,
-                        content: encrypted.message,
-                        success: encrypted.success
-                    }
+                    id: data.id,
+                    content: encrypted.message,
+                    success: encrypted.success
                 });
-            } else if (message.data.reason === CRYPT_REASON_DE) {
-                const decrypted = await decrypt(message.data.content);
+            } else if (data.reason === CRYPT_REASON_DE) {
+                const decrypted = await decrypt(data.content);
                 sendToInjected({
                     type: TYPES_RESPONSE,
-                    data: {
-                        id: message.data.id,
-                        content: decrypted.message,
-                        success: decrypted.success
-                    }
+                    id: data.id,
+                    content: decrypted.message,
+                    success: decrypted.success
                 });
             }
             break;
         case TYPES_RESPONSE:
-            if (message.data === PING_REQUEST) {
-                clearTimeout(reconnectTimeout);
-                console.log("Reconnected to an old script. I'll reload the page and reinject.");
-                if (confirm("Old injected script detected.\nIt is highly recommended to reload the page.\n\nOutdated scripts or multiple injected instances WILL lead to errors.\n\nYou can reload now, or manually if you want to finish something.")) {
-                    location.reload();
-                    alert("Reloading...");
-                } else {
-                    alert("Please reload manually ASAP!");
-                }
+            // Reserved for later use
+            break;
+        case TYPES_PING:
+            clearTimeout(reconnectTimeout);
+            console.log("Reconnected to an old script. I'll reload the page and reinject.");
+            if (confirm("Old injected script detected.\nIt is highly recommended to reload the page.\n\nOutdated scripts or multiple injected instances WILL lead to errors.\n\nYou can reload now, or manually if you want to finish something.")) {
+                location.reload();
+                alert("Reloading...");
+            } else {
+                alert("Please reload manually ASAP!");
             }
             break;
         default:
@@ -90,12 +88,13 @@ window.addEventListener("message", async (message) => {
 
 function sendToInjected(message) {
     message.shield = shield;
+    message.direction = DIRECTION_C2I;
     window.postMessage(message);
 }
 // inject
 function inject() {
     const script = document.createElement("script");
-    script.src = chrome.runtime.getURL("discord_injected.js");
+    script.src = chrome.runtime.getURL("scripts/discord_injected.js");
     script.dataset.shield = shield;
     console.log(`Injecting ${script.src}...`);
     script.onload = () => {
@@ -109,9 +108,8 @@ function inject() {
 // magic
 //#region crypto
 async function encrypt(message) {
-    if (!settings.enabled) return { message: result, success: false };
+    if (!settings.enabled) return { message, success: true };
 
-    let success = true;
     try {
         const salt = crypto.getRandomValues(new Uint8Array(16)); // a pinch of salt
         const key = crypto.subtle.deriveKey({ // this is a key moment!
@@ -147,17 +145,15 @@ async function encrypt(message) {
 
         const result = `${TEXT_MARK}${finalArray.toBase64()}`;
         if (result.length > MAX_DISCORD_MESSAGE_LENGTH_IN_CHARS) throw new Error(`Ciphertext length overflow; Length: ${result.length}; Max: ${MAX_DISCORD_MESSAGE_LENGTH_IN_CHARS}`);
+        return { message: result, success: true };
     } catch (err) {
-        success = false;
         console.error("Failed to encrypt message", message.content, err);
+        return { message: result, success: false };
     }
-
-    return { message: result, success };
 }
 async function decrypt(message) {
-    if (!settings.enabled || !message.startsWith(TEXT_MARK)) return { message: result, success: false };
+    if (!settings.enabled || !message.startsWith(TEXT_MARK)) return { message, success: false };
 
-    let success = true;
     try {
         const bytes = Uint8Array.from(atob(message.slice(TEXT_MARK.length)), c => c.charCodeAt(0));
 
@@ -189,12 +185,12 @@ async function decrypt(message) {
             encrypted
         );
         message = dec.decode(finalArray);
-    } catch (err) {
-        success = false;
-        console.error("Failed to decrypt message", message, err);
-    }
 
-    return { message, success };
+        return { message, success: true };
+    } catch (err) {
+        console.error("Failed to decrypt message", message, err);
+        return { message, success: false };
+    }
 }
 //#endregion
 

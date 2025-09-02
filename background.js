@@ -18,11 +18,15 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
 });
 
 function broadcastToContentScripts(key, value) {
-    chrome.tabs.query({}).then((tabs) => {
+    chrome.tabs.query({}, (tabs) => {
         tabs.forEach(tab => {
-            chrome.tabs.sendMessage(tab.id, {
-                data: [key, value]
-            }).catch(() => {}); // content script not found on page
+            try {
+                chrome.tabs.sendMessage(tab.id, {
+                    data: [key, value]
+                })
+            } catch (err) {
+                // content script not found on page
+            }
         });
     });
 }
