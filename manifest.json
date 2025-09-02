@@ -14,14 +14,19 @@
     "permissions": [
         "webRequest",
         "webRequestBlocking",
-        "theme"
+        "theme",
+        "tabs"
     ],
     "content_scripts": [
         {
-            "matches": ["*://discord.com/*"],
-            "js": ["discord_encrypt.js"]
+            "matches": ["*://*.discord.com/*"],
+            "js": ["scripts/discord_content.js"]
         }
     ],
+    "web_accessible_resources": [{
+        "resources": ["scripts/discord_injected.js"],
+        "matches": ["*://*.discord.com/*"]
+    }],
         "browser_action": {
         "default_icon": "icons/tunnel_48.png",
         "default_title": "Tunnel",
