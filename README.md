@@ -28,8 +28,8 @@ Egy Firefox böngésző kiegészítő, amely végpontok közötti titkosítást 
 2. Engedélyezd a kiegészítőt és állítsd be a titkosító jelszavadat
 
 
-### ~~ Firefox - extensionből ~~
-~~. Menj a `https://addons.mozilla.org/hu/firefox/search/BarniHekiLinker` oldalra. ~~
+### Firefox - extensionből
+~~1. Menj a [`kiegészítő`](https://addons.mozilla.org/hu/firefox/search/BarniHekiLinker) oldalra.~~
 ~~2. Hozzáadás és Engedélyezés~~
 
 
