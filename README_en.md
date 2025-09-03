@@ -27,9 +27,9 @@ A Firefox browser extension that provides end-to-end encryption for Discord mess
 1. Load the extension in developer mode using `manifest.json`
 2. Enable the extension and set your encryption password
 
-### ~~ Firefox - from extension store ~~
-~~1. Go to `https://addons.mozilla.org/hu/firefox/search/BarniHekiLinker` page. ~~
-~~2. Add and Enable~~
+### Firefox - from extension store
+~~1. Visit [`extension`](https://addons.mozilla.org/hu/firefox/search/BarniHekiLinker)~~  
+~~2. Add the extension to Firefox and enable it~~
 
 
 ## 🔐 Security Details
