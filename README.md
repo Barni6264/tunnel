@@ -29,9 +29,8 @@ Egy Firefox böngésző kiegészítő, amely végpontok közötti titkosítást 
 
 
 ### Firefox - extensionből
-~~1. Menj a [`kiegészítő`](https://addons.mozilla.org/hu/firefox/search/BarniHekiLinker) oldalra.~~
-
-~~**2. Hozzáadás és Engedélyezés**~~
+1. ~~ Menj a [`kiegészítő`](https://addons.mozilla.org/hu/firefox/search/BarniHekiLinker) oldalra.~~
+2. ~~ Hozzáadás és Engedélyezés~~
 
 
 ## 🔐 Biztonsági Részletek
